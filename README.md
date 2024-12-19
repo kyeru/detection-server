@@ -1,5 +1,35 @@
 # OSS validation model driver
 
+## 설치 방법
+
+- 파이썬 버전 3.11
+- 파이썬 패키지 관리 도구 [uv](https://docs.astral.sh/uv/)
+  - uv 설치 방법은 [uv 공식 문서](https://github.com/astral-sh/uv?tab=readme-ov-file#installation)를 참고한다.
+```bash
+$ cd some_where/detection-server
+```
+
+#### 방법#1 - uv 사용 시
+
+```bash
+$ uv venv
+$ source .venv/bin/activate
+$ uv sync
+
+# 새로운 패키지를 설치할 경우
+$ uv add {package}
+```
+
+
+#### 방법#2 - pip 사용 시
+
+```bash
+$ pip install flask kafka-python PyYAML
+
+# requirements.txt 파일을 사용할 경우
+$ pip install -r requirements.txt
+```
+
 ## 실행 방법
 
 ```bash
