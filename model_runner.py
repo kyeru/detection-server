@@ -1,5 +1,6 @@
 # Imports - Standard
 from functools import partial
+import datetime
 import json
 import logging
 
@@ -92,9 +93,11 @@ def run_model(model_name, request_message):
     
     # report에 모델 실행 결과 저장
     # 이 코드 라인에서 호출하는 실제 모델 함수로 바꿔야 한다.
+    task_start_time = datetime.datetime.now().isoformat(timespec='milliseconds')
     model_result = model_mock.run_model(request_data)
+    task_end_time = datetime.datetime.now().isoformat(timespec='milliseconds')
     # TODO 에러 발생시 처리 필요함
-    report = make_report(token, model_name, model_result)
+    report = make_report(token, model_name, task_start_time, task_end_time, model_result)
     logger.info(f'Report: {report}')
     return report
 
@@ -115,9 +118,9 @@ def parse_request_message(request_message):
     return token, request_data
 
 
-def make_report(token, model_name, model_result):
-    report_template = '{ "token": "%s", "modelName": "%s", "report": "%s" }'
-    return report_template % (token, model_name, model_result)
+def make_report(token, model_name, task_start_time, task_end_time, model_result):
+    report_template = '{ "token": "%s", "modelName": "%s", "taskStartTime": "%s", "taskEndTime": "%s", "report": "%s" }'
+    return report_template % (token, model_name, task_start_time, task_end_time, model_result)
 
 
 def get_status():

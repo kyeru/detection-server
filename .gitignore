@@ -9,3 +9,6 @@ __pycache__
 
 # macOS
 .DS_Store
+
+# test notebook
+examples/.ipynb_checkpoints/
