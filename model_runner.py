@@ -114,7 +114,7 @@ def parse_request_message(request_message):
         raise ValueError(f"Invalid request message type: {type(request_message)}")
 
     token = request_message['token']
-    request_data = request_message['payload']
+    request_data = request_message['value']
     return token, request_data
 
 

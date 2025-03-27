@@ -10,19 +10,27 @@ from . import (
     MSG_KEY_TIMESTAMP, MSG_KEY_USER, MSG_KEY_DATA,
     MSG_KEY_MODEL_NAME_CAMEL, MSG_KEY_VALUE)
 
+
 class RequestMessage(BaseModel):
     timestamp: str = Field(
         default_factory=lambda: datetime.now().isoformat(timespec='milliseconds') + 'Z',
         description='The timestamp of the request message created'
     )
-    user: str  = Field(
+
+    token: str = Field(
+        description='Unique token generated for reqeuest'
+    )
+
+    user: str = Field(
         default='SELab.Tester',
         description='The user who requested the model'
     )
+
     model_name: str = Field(
         alias=MSG_KEY_MODEL_NAME_CAMEL,
         description='The name of the model to request'
     )
+
     value: dict = Field(
         description='The payload to request'
     )
@@ -46,6 +54,7 @@ class RequestMessage(BaseModel):
             MSG_KEY_DATA: json.dumps(self.data)
         }
         return json.dumps(msg)
+
 
 if __name__ == '__main__':
     model_name = 'SELab.Fixer'
