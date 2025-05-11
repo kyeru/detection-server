@@ -6,7 +6,7 @@ import logging
 
 # Imports - Third-party
 from kafka_utils import kafka_pub, kafka_sub
-
+from kafka_utils.models import RequestMessage
 # Imports - Local
 from mocks import model_mock
 
@@ -87,40 +87,28 @@ def run(config):
 
 # 모델 실행 후 결과 반환
 # request_message는 json string이 아니라 dict object여야 함
-def run_model(model_name, request_message):
-    logger.info(f"Processing message: {request_message}")
-    token, request_data = parse_request_message(request_message)
-    
+def run_model(model_name, request_message_json):
+    logger.info(f"Processing message: {request_message_json}")
+    request_message = RequestMessage.parse_from_json(request_message_json)
+
+    logger.info(f"request message parsed: {request_message}")
     # report에 모델 실행 결과 저장
     # 이 코드 라인에서 호출하는 실제 모델 함수로 바꿔야 한다.
     task_start_time = datetime.datetime.now().isoformat(timespec='milliseconds')
-    model_result = model_mock.run_model(request_data)
+    logger.info(f"start running at {task_start_time}")
+    status, model_result = model_mock.run_model(request_message)
     task_end_time = datetime.datetime.now().isoformat(timespec='milliseconds')
+    logger.info(f"end running at {task_end_time}")
+
     # TODO 에러 발생시 처리 필요함
-    report = make_report(token, model_name, task_start_time, task_end_time, model_result)
+    report = make_report(request_message.token, model_name, status, task_start_time, task_end_time, model_result)
     logger.info(f'Report: {report}')
     return report
 
 
-def parse_request_message(request_message):
-    if isinstance(request_message, dict):
-        pass
-    elif isinstance(request_message, str):
-        try:
-            request_message = json.loads(request_message)
-        except json.JSONDecodeError:
-            raise ValueError(f"Invalid request message type: {type(request_message)}")
-    else:
-        raise ValueError(f"Invalid request message type: {type(request_message)}")
-
-    token = request_message['token']
-    request_data = request_message['value']
-    return token, request_data
-
-
-def make_report(token, model_name, task_start_time, task_end_time, model_result):
-    report_template = '{ "token": "%s", "modelName": "%s", "taskStartTime": "%s", "taskEndTime": "%s", "report": "%s" }'
-    return report_template % (token, model_name, task_start_time, task_end_time, model_result)
+def make_report(token, model_name, status, task_start_time, task_end_time, model_result):
+    report_template = '{ "token": "%s", "modelName": "%s", "status": "%s", "taskStartTime": "%s", "taskEndTime": "%s", "report": "%s" }'
+    return report_template % (token, model_name, status, task_start_time, task_end_time, model_result)
 
 
 def get_status():
